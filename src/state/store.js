@@ -10,8 +10,6 @@ const store = create((set) => ({
   sortData :[],
   dataCtrl : async function(action){
 
-    
-
     let res;    
     switch(action.type){
         case 'get' : 
@@ -43,14 +41,12 @@ const store = create((set) => ({
             res = await instance.delete(`/?id=${action.data}`); 
             set( (state)=> {
               let del = [...state.data].filter((obj)=>{
-                            obj.id != action.data.id                          
+                            return obj.id != action.data                          
                           })
               return {data:del};
             });  
             break;
     }    
-    // set({data:res.data});   
-     
     
   },
   sortCtrl : function(sort){

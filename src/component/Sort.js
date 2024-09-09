@@ -7,7 +7,7 @@ const Sort = () => {
   let [type,setType] = useState('All');
 
   useEffect(()=>{
-    if(data.length) sortCtrl({type});
+    sortCtrl({type});
   },[data, type])
     
   return (
