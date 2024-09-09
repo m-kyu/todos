@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { create } from 'zustand';
 
-
 const instance = axios.create({
-    baseURL: 'https://port-0-express202409-jvvy2blm4a51lv.sel5.cloudtype.app/todos',
+    baseURL: process.env.REACT_APP_SERVER_URL,
 });
 
 const store = create((set) => ({
@@ -11,21 +10,47 @@ const store = create((set) => ({
   sortData :[],
   dataCtrl : async function(action){
 
+    
+
     let res;    
     switch(action.type){
         case 'get' : 
-        res = await instance.get("/"); break;
+        res = await instance.get("/");
+        set({data:res.data});  
+        break;
 
         case 'post' : 
-        res = await instance.post("/",action.data); break;
+            await instance.post("/",action.data);
+            set( (state)=> {
+              return {data:[...state.data, action.data]};
+            });  
+            break;
 
         case 'put' : 
-        res = await instance.put("/",action.data); break;
+            await instance.put("/",action.data); 
+            set( (state)=> {
+              let update = [...state.data].map((obj)=>{
+                            if(action.data.id == obj.id){
+                              obj.status = action.status
+                            }
+                            return obj;
+                          })
+              return {data:update};
+            });  
+            break;
 
         case 'delete' : 
-        res = await instance.delete(`/?id=${action.data}`); break;
+            res = await instance.delete(`/?id=${action.data}`); 
+            set( (state)=> {
+              let del = [...state.data].filter((obj)=>{
+                            obj.id != action.data.id                          
+                          })
+              return {data:del};
+            });  
+            break;
     }    
-    set({data:res.data.list});   
+    // set({data:res.data});   
+     
     
   },
   sortCtrl : function(sort){
